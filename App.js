@@ -264,11 +264,25 @@ function CatChart({ S, m, C }) {
 /* ---------- Fenêtres (bottom sheets) ---------- */
 function SheetFrame({ C, st, title, onClose, children }) {
   return (
-    <Modal visible transparent animationType="slide" onRequestClose={onClose}>
-      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{ flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.55)' }}>
+    <Modal
+      visible
+      transparent
+      animationType="slide"
+      statusBarTranslucent
+      onRequestClose={onClose}
+    >
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'android' ? 24 : 0}
+        style={{ flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.6)' }}
+      >
         <Pressable style={{ flex: 1 }} onPress={onClose} />
         <View style={st.sheet}>
-          <ScrollView keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
+          <ScrollView
+            keyboardShouldPersistTaps="handled"
+            bounces={false}
+            showsVerticalScrollIndicator={false}
+          >
             <Text style={{ fontFamily: FB, fontSize: 20, color: C.ink, marginBottom: 14 }}>{title}</Text>
             {children}
           </ScrollView>
@@ -290,7 +304,7 @@ function ErrText({ t }) {
 }
 function SheetButtons({ C, label, onSave, onClose }) {
   return (
-    <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
+    <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 4, marginBottom: 8 }}>
       <Btn C={C} kind="or" label={label} onPress={onSave} style={{ flex: 1, marginRight: 8 }} />
       <Btn C={C} kind="ghost" small label="Annuler" onPress={onClose} />
     </View>
@@ -312,7 +326,7 @@ function AddSheet({ C, st, month, defaultCat, onSave, onClose }) {
   };
   return (
     <SheetFrame C={C} st={st} title="Nouvelle dépense" onClose={onClose}>
-      <Field C={C} st={st} label="Montant (FCFA)" value={amt} onChangeText={setAmt} keyboardType="numeric" placeholder="2500" autoFocus />
+      <Field C={C} st={st} label="Montant (FCFA)" value={amt} onChangeText={setAmt} keyboardType="numeric" placeholder="2500" />
       <Text style={{ fontFamily: FB, fontSize: 13, color: C.ink, marginBottom: 5 }}>Catégorie</Text>
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginBottom: 12 }}>
         {CATS.map((c) => {
@@ -343,7 +357,7 @@ function BudgetSheet({ C, st, current, onSave, onClose }) {
   };
   return (
     <SheetFrame C={C} st={st} title="Budget mensuel" onClose={onClose}>
-      <Field C={C} st={st} label="Combien voulez-vous dépenser au maximum par mois ?" value={v} onChangeText={setV} keyboardType="numeric" placeholder="150000" autoFocus />
+      <Field C={C} st={st} label="Combien voulez-vous dépenser au maximum par mois ?" value={v} onChangeText={setV} keyboardType="numeric" placeholder="150000" />
       <ErrText t={err} />
       <SheetButtons C={C} label="Enregistrer le budget" onSave={go} onClose={onClose} />
     </SheetFrame>
@@ -364,7 +378,7 @@ function GoalSheet({ C, st, onSave, onClose }) {
   };
   return (
     <SheetFrame C={C} st={st} title="Nouvel objectif d'épargne" onClose={onClose}>
-      <Field C={C} st={st} label="Nom de l'objectif" value={name} onChangeText={setName} maxLength={40} placeholder="Ordinateur portable" autoFocus />
+      <Field C={C} st={st} label="Nom de l'objectif" value={name} onChangeText={setName} maxLength={40} placeholder="Ordinateur portable" />
       <Field C={C} st={st} label="Montant à atteindre (FCFA)" value={target} onChangeText={setTarget} keyboardType="numeric" placeholder="300000" />
       <Field C={C} st={st} label="Date limite (facultatif, AAAA-MM-JJ)" value={dl} onChangeText={setDl} placeholder="2027-03-31" keyboardType="numbers-and-punctuation" maxLength={10} />
       <ErrText t={err} />
@@ -384,7 +398,7 @@ function MoveSheet({ C, st, goal, sign, onSave, onClose }) {
   };
   return (
     <SheetFrame C={C} st={st} title={`${sign > 0 ? 'Verser dans' : 'Retirer de'} « ${goal.name} »`} onClose={onClose}>
-      <Field C={C} st={st} label="Montant (FCFA)" value={v} onChangeText={setV} keyboardType="numeric" placeholder="10000" autoFocus />
+      <Field C={C} st={st} label="Montant (FCFA)" value={v} onChangeText={setV} keyboardType="numeric" placeholder="10000" />
       <ErrText t={err} />
       <SheetButtons C={C} label={sign > 0 ? 'Verser' : 'Retirer'} onSave={go} onClose={onClose} />
     </SheetFrame>
