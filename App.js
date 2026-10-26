@@ -9,6 +9,7 @@ import Svg, { Path, Line, Rect, Circle, Text as SvgText } from 'react-native-svg
 import { Ionicons } from '@expo/vector-icons';
 import { useFonts, Inter_400Regular, Inter_600SemiBold, Inter_700Bold } from '@expo-google-fonts/inter';
 import * as SplashScreen from 'expo-splash-screen';
+import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 SplashScreen.preventAutoHideAsync().catch(() => { });
 
@@ -392,9 +393,19 @@ function MoveSheet({ C, st, goal, sign, onSave, onClose }) {
 
 /* ---------- Application ---------- */
 export default function App() {
+  return (
+    <SafeAreaProvider>
+      <AppContent />
+    </SafeAreaProvider>
+  );
+}
+
+function AppContent() {
   const scheme = useColorScheme();
+  const insets = useSafeAreaInsets();
   const C = scheme === 'dark' ? DARK : LIGHT;
-  const st = useMemo(() => makeStyles(C), [scheme]);
+  const bottomInset = Math.max(insets.bottom, Platform.OS === 'android' ? 16 : 12);
+  const st = useMemo(() => makeStyles(C, bottomInset), [scheme, bottomInset]);
   const { width } = useWindowDimensions();
   const cw = Math.min(width, 520) - 64;
 
@@ -699,7 +710,7 @@ export default function App() {
         </View>
 
         {/* Contenu */}
-        <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 170 }} showsVerticalScrollIndicator={false}>
+        <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 120 + bottomInset }} showsVerticalScrollIndicator={false}>
           {screens[tab]()}
         </ScrollView>
 
@@ -738,7 +749,7 @@ export default function App() {
 }
 
 /* ---------- Styles ---------- */
-function makeStyles(C) {
+function makeStyles(C, bottomInset = 16) {
   return StyleSheet.create({
     root: { flex: 1, backgroundColor: C.bg },
     wrap: { flex: 1, width: '100%', maxWidth: 520, alignSelf: 'center', backgroundColor: C.bg },
@@ -753,8 +764,8 @@ function makeStyles(C) {
     row: { flexDirection: 'row', alignItems: 'center', paddingVertical: 12, borderTopWidth: 1, borderTopColor: C.line },
     chip: { flexDirection: 'row', alignItems: 'center', paddingVertical: 8, paddingHorizontal: 12, borderRadius: 999, borderWidth: 1.5, borderColor: C.line, marginRight: 8, marginBottom: 8 },
     input: { fontFamily: FR, fontSize: 16, color: C.ink, backgroundColor: C.bg, borderWidth: 1.5, borderColor: C.line, borderRadius: 12, paddingHorizontal: 12, paddingVertical: 12 },
-    sheet: { backgroundColor: C.card, borderTopLeftRadius: 22, borderTopRightRadius: 22, padding: 18, paddingBottom: 28, maxHeight: '90%', width: '100%', maxWidth: 520, alignSelf: 'center' },
-    fab: { position: 'absolute', right: 16, bottom: 90, width: 58, height: 58, borderRadius: 29, backgroundColor: ORANGE, alignItems: 'center', justifyContent: 'center', elevation: 8, shadowColor: '#000', shadowOpacity: 0.3, shadowRadius: 8, shadowOffset: { width: 0, height: 4 } },
-    nav: { position: 'absolute', left: 0, right: 0, bottom: 0, flexDirection: 'row', backgroundColor: C.card, borderTopWidth: 1, borderTopColor: C.line, paddingTop: 6, paddingBottom: Platform.OS === 'ios' ? 26 : 18, paddingHorizontal: 4 },
+    sheet: { backgroundColor: C.card, borderTopLeftRadius: 22, borderTopRightRadius: 22, padding: 18, paddingBottom: Math.max(bottomInset + 12, 28), maxHeight: '90%', width: '100%', maxWidth: 520, alignSelf: 'center' },
+    fab: { position: 'absolute', right: 16, bottom: 65 + bottomInset, width: 58, height: 58, borderRadius: 29, backgroundColor: ORANGE, alignItems: 'center', justifyContent: 'center', elevation: 8, shadowColor: '#000', shadowOpacity: 0.3, shadowRadius: 8, shadowOffset: { width: 0, height: 4 } },
+    nav: { position: 'absolute', left: 0, right: 0, bottom: 0, flexDirection: 'row', backgroundColor: C.card, borderTopWidth: 1, borderTopColor: C.line, paddingTop: 6, paddingBottom: bottomInset, paddingHorizontal: 4 },
   });
 }
